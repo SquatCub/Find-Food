@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapa.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(LatLng latLng) {
-                    Toast.makeText(getApplicationContext(), "Cargando...", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(MainActivity.this, newResena_Activity.class);
                     Bundle b = new Bundle();
 

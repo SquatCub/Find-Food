@@ -96,4 +96,25 @@
             android:inputType="textPersonName"
             android:text="" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayouts02"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10px"
+        android:gravity="bottom|end">
+
+        <Button
+            android:id="@+id/confirmar"
+            android:layout_width="match_parent"
+            android:layout_height="150px"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:onClick="create"
+            android:padding="10px"
+            android:text="Agregar lugar"
+            android:textColor="#FFFFFF"
+            android:textSize="45px"
+            android:textStyle="normal" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

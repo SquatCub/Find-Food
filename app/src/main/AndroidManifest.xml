@@ -24,9 +24,11 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.A05T_Mapas">
-        <activity android:name=".openResena_Activity"></activity>
+        <activity android:name=".openResena_Activity" />
         <activity android:name=".newResena_Activity" />
-        <activity android:name=".MainActivity" android:theme="@style/SplashScreen">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +39,6 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBDeyxW08wHVH8EDLHr4IC1XjOS1PPWFVA" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
