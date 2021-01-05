@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (googleServiciosDisponible())
         {
-            Toast.makeText(this, "Disponible...", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Servicios disponibles", Toast.LENGTH_SHORT).show();
             setContentView(R.layout.activity_main);
             iniciaMapa();
         }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         mapa.clear();
 
-        Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < Lista.Resenas.size(); i++)
         {
