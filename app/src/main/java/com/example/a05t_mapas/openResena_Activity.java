@@ -38,6 +38,7 @@ public class openResena_Activity extends AppCompatActivity implements OnMapReady
         TextView local = findViewById(R.id.nombreLocal);
         TextView alimento = findViewById(R.id.nombreAlimento);
         TextView resena = findViewById(R.id.nombreResena);
+
         myTexto.setText("Ubicacion: "+indice);
         persona.setText("Usuario: "+myReseña.getNombre());
         local.setText("Restaurant/Local: "+myReseña.getRestaurant());

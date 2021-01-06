@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -24,21 +26,29 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mapa;
-    private int request_code = 1;
+    private final int request_code = 1;
+    private final int VERSION = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
 
+        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
+        SQLiteDatabase myDB = dbFindFood.getWritableDatabase();
+        myDB.close();
+
+        loadData();
+
         if (googleServiciosDisponible())
         {
-            Toast.makeText(this, "Servicios disponibles", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Servicios disponibles", Toast.LENGTH_SHORT).show();
             setContentView(R.layout.activity_main);
             iniciaMapa();
         }
         else
         {
-            // no hay google maps
+            Toast.makeText(this, "Servicio NO disponible :(", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -58,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Dialog dialog = api.getErrorDialog(this, estaDisponible, 0);
             dialog.show();
         } else {
-            Toast.makeText(this, "No es posible enlazar Google Services", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No fue posible establecer conexión con Google Services", Toast.LENGTH_LONG).show();
         }
         return false;
     }
@@ -108,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     b.putDouble("lat", latLng.latitude);
                     b.putDouble("lon", latLng.longitude);
+                    b.putInt("VERSION", VERSION);
                     i.putExtras(b);
 
                     startActivityForResult(i, request_code);
@@ -129,11 +140,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void renderMap()
+    private void renderMap()
     {
         mapa.clear();
 
-        Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
 
         for (int i = 0; i < Lista.Resenas.size(); i++)
         {
@@ -144,5 +155,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Marker marcador = mapa.addMarker(options);
             marcador.setTag(new String(""+i));
         }
+    }
+
+    private void loadData()
+    {
+        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
+        SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
+        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
+
+        Cursor c = myDB.rawQuery(query, null);
+        if (c.moveToFirst()){
+            do {
+                int idResena = c.getInt(0);
+                double latitud = c.getDouble(1);
+                double longitud = c.getDouble(2);
+                String restaurant = c.getString(3);
+                String platillo = c.getString(4);
+                String resena = c.getString(5);
+                String fecha = c.getString(6);
+                String nombre = c.getString(7);
+                int edad = c.getInt(8);
+
+                Resena newResena = new Resena();
+                newResena.setNombre(nombre);
+                newResena.setEdad(edad);
+                newResena.setRestaurant(restaurant);
+                newResena.setPlatillo(platillo);
+                newResena.setReseña(resena);
+                newResena.setLatitud(latitud);
+                newResena.setLongitud(longitud);
+                Lista.Resenas.add(newResena);
+
+            } while(c.moveToNext());
+        }
+        c.close();
+        myDB.close();
     }
 }
