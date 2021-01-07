@@ -24,17 +24,17 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.A05T_Mapas">
-        <activity android:name=".openResena_Activity" />
-        <activity android:name=".newResena_Activity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Login"
             android:theme="@style/SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".openResena_Activity" />
+        <activity android:name=".newResena_Activity" />
+        <activity android:name=".MainActivity" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
