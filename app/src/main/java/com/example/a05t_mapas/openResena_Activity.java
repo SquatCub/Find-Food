@@ -14,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -97,6 +98,9 @@ public class openResena_Activity extends AppCompatActivity implements OnMapReady
 
         MarkerOptions options = new MarkerOptions().position(ubicacion);
         Marker marcador = mapa.addMarker(options);
-        marcador.setTag(new String(""+indice));
+        marcador.setSnippet(myReseña.getPlatillo());
+        marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+        marcador.setTitle(myReseña.getRestaurant());
+        marcador.showInfoWindow();
     }
 }

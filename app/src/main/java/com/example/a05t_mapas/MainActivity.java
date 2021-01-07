@@ -7,7 +7,9 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,16 +20,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mapa;
     private final int request_code = 1;
     private final int VERSION = 2;
+
+    private long lastTouchTime = 0;
+    private long currentTouchTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +133,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 @Override
                 public View getInfoContents(Marker marker) {
-                    String tagIndice = (String) marker.getTag();
+                    lastTouchTime = currentTouchTime;
+                    currentTouchTime = System.currentTimeMillis();
+
+                    if (currentTouchTime-lastTouchTime < 1000) {
+                        Log.d("Duble","Doble clic");
+                        lastTouchTime = 0;
+                        currentTouchTime = 0;
+                        String tagIndice = (String) marker.getTag();
+                        int indice = Integer.parseInt(tagIndice);
+
+                        Intent i = new Intent(MainActivity.this, openResena_Activity.class);
+                        Bundle b = new Bundle();
+
+                        b.putInt("indice", indice);
+
+                        i.putExtras(b);
+                        startActivity(i);
+                    }
+                    else {
+                        Log.d("Duble",Long.valueOf(currentTouchTime-lastTouchTime).toString());
+                        lastTouchTime = currentTouchTime;
+                    }
+                    /*String tagIndice = (String) marker.getTag();
                     int indice = Integer.parseInt(tagIndice);
 
                     Intent i = new Intent(MainActivity.this, openResena_Activity.class);
@@ -137,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     b.putInt("indice", indice);
 
                     i.putExtras(b);
-                    startActivity(i);
+                    startActivity(i);*/
 
                     return null;
                 }
@@ -186,7 +213,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             MarkerOptions options = new MarkerOptions().position(ubicacion);
             Marker marcador = mapa.addMarker(options);
+            marcador.setSnippet(myReseña.getPlatillo());
             marcador.setTag(new String(""+i));
+            marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
+            marcador.setTitle(myReseña.getRestaurant());
+            //IconGenerator iconFactory = new IconGenerator(this);
+            //iconFactory.setColor(Color.rgb(220, 38, 20));
+            //iconFactory.setTextAppearance(android.R.style.TextAppearance_Holo_Small_Inverse);
+            //marcador.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(myReseña.getRestaurant())));
         }
     }
 
