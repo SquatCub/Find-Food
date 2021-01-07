@@ -32,14 +32,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
-        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
-        SQLiteDatabase myDB = dbFindFood.getWritableDatabase();
+        if(existUser()) {
+            loadDB();
+            loadData();
+            loadMap();
+        }
+        else {
+            gotoLogin();
+        }
+    }
+
+    private void gotoLogin() {
+        Intent intent = new Intent(this, Login.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private boolean existUser() {
+        MyBD_FindFood dbFindFood = new MyBD_FindFood(this, "MyBD_FindFood", null, VERSION);
+        SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
+        String query = "SELECT * FROM User";
+        boolean existUser = false;
+
+        Cursor c = myDB.rawQuery(query, null);
+
+        if (c.moveToFirst()){
+            existUser = true;
+        }
+        c.close();
         myDB.close();
 
-        loadData();
+        return existUser;
+    }
 
+    private void loadMap() {
         if (googleServiciosDisponible())
         {
             //Toast.makeText(this, "Servicios disponibles", Toast.LENGTH_SHORT).show();
@@ -50,6 +77,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             Toast.makeText(this, "Servicio NO disponible :(", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void loadDB() {
+        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
+        SQLiteDatabase myDB = dbFindFood.getWritableDatabase();
+        myDB.close();
     }
 
     private void iniciaMapa() {
@@ -161,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
         SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
-        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
+        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad, apellido FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
 
         Cursor c = myDB.rawQuery(query, null);
         if (c.moveToFirst()){
@@ -175,9 +208,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String fecha = c.getString(6);
                 String nombre = c.getString(7);
                 int edad = c.getInt(8);
+                String apellido = c.getString(9);
 
                 Resena newResena = new Resena();
-                newResena.setNombre(nombre);
+                newResena.setNombre(nombre+" "+apellido);
                 newResena.setEdad(edad);
                 newResena.setRestaurant(restaurant);
                 newResena.setPlatillo(platillo);

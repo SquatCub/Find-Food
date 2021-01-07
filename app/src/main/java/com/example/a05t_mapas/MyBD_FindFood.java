@@ -1,6 +1,7 @@
 package com.example.a05t_mapas;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -52,16 +53,12 @@ public class MyBD_FindFood extends SQLiteOpenHelper {
         db.execSQL(queryGeoreferenciaTable);
         db.execSQL(queryResenaTable);
 
-        String queryAddUser =
-                " INSERT INTO User " +
-                        "(nombre, apellido, edad, ciudad) VALUES " +
-                        "('Diego', 'Zamora', 22, 'Huajumbaro')";
-
-        db.execSQL(queryAddUser);
-
         Log.d("MyBD_FindFood", "Creando Base de Datos");
         Toast.makeText(this.myContext, "Creando Base de Datos... :)", Toast.LENGTH_LONG).show();
 
+        // Primera vez que se usa la app, Pedir datos del Usuario
+        Intent intent = new Intent(this.myContext, Login.class);
+        myContext.startActivity(intent);
     }
 
     @Override

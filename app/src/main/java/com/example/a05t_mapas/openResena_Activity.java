@@ -73,17 +73,6 @@ public class openResena_Activity extends AppCompatActivity implements OnMapReady
 
                 @Override
                 public View getInfoContents(Marker marker) {
-                    String tagIndice = (String) marker.getTag();
-                    int indice = Integer.parseInt(tagIndice);
-
-                    Intent i = new Intent(getApplicationContext(), openResena_Activity.class);
-                    Bundle b = new Bundle();
-
-                    b.putInt("indice", indice);
-
-                    i.putExtras(b);
-                    startActivity(i);
-
                     return null;
                 }
             });

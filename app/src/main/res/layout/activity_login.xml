@@ -81,13 +81,14 @@
             android:layout_height="wrap_content"
             android:text="Edad"
             android:textAlignment="center"/>
+
         <EditText
             android:id="@+id/userEdad"
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
+            android:gravity="center"
+            android:inputType="number|textPersonName"
             android:text="" />
 
         <TextView
@@ -120,6 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="150px"
             android:layout_gravity="bottom"
+            android:backgroundTint="#000000"
             android:gravity="center"
             android:onClick="login"
             android:padding="10px"
