@@ -1,13 +1,20 @@
 package com.example.a05t_mapas;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
     private GoogleMap mapa;
     private final int request_code = 1;
     private final int VERSION = 2;
@@ -34,9 +41,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long lastTouchTime = 0;
     private long currentTouchTime = 0;
 
+    protected LocationManager locationManager;
+    protected LocationListener locationListener;
+    protected Context context;
+
+    protected String latitude, longitude;
+    protected boolean gps_enabled, network_enabled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
         if(existUser()) {
             loadDB();
@@ -115,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         mapa = googleMap;
-        LatLng ll = new LatLng(19.707611075950084, -101.1888419188767);
+        LatLng ll = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
 
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll,15);
 
@@ -205,22 +225,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapa.clear();
 
         //Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
+        LatLng ubicacion = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
 
+        MarkerOptions options = new MarkerOptions().position(ubicacion);
+        Marker marcador = mapa.addMarker(options);
+        marcador.setSnippet("Tú estás aquí");
+        marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.gps));
+        marcador.setTitle("Tú estás aquí");
         for (int i = 0; i < Lista.Resenas.size(); i++)
         {
             Resena myReseña = (Resena) Lista.Resenas.get(i);
-            LatLng ubicacion = new LatLng(myReseña.getLatitud(), myReseña.getLongitud());
+            ubicacion = new LatLng(myReseña.getLatitud(), myReseña.getLongitud());
 
-            MarkerOptions options = new MarkerOptions().position(ubicacion);
-            Marker marcador = mapa.addMarker(options);
+            options = new MarkerOptions().position(ubicacion);
+            marcador = mapa.addMarker(options);
             marcador.setSnippet(myReseña.getPlatillo());
             marcador.setTag(new String(""+i));
             marcador.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon));
             marcador.setTitle(myReseña.getRestaurant());
-            //IconGenerator iconFactory = new IconGenerator(this);
-            //iconFactory.setColor(Color.rgb(220, 38, 20));
-            //iconFactory.setTextAppearance(android.R.style.TextAppearance_Holo_Small_Inverse);
-            //marcador.setIcon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(myReseña.getRestaurant())));
         }
     }
 
@@ -258,5 +280,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         c.close();
         myDB.close();
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        latitude = String.valueOf(location.getLatitude());
+        longitude = String.valueOf(location.getLongitude());
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+
     }
 }
