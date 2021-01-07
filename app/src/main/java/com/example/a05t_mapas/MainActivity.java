@@ -202,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     i.putExtras(b);
 
                     startActivityForResult(i, request_code);
+                    finish();
                 }
             });
         }
