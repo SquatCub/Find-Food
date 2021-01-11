@@ -42,21 +42,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private long currentTouchTime = 0;
 
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
-    protected Context context;
 
-    protected String latitude, longitude;
-    protected boolean gps_enabled, network_enabled;
+    protected double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        
 
         if(existUser()) {
             loadDB();
@@ -135,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         mapa = googleMap;
-        LatLng ll = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+        LatLng ll = new LatLng(latitude, longitude);
 
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll,15);
 
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapa.clear();
 
         //Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
-        LatLng ubicacion = new LatLng(Double.valueOf(latitude), Double.valueOf(longitude));
+        LatLng ubicacion = new LatLng(latitude, longitude);
 
         MarkerOptions options = new MarkerOptions().position(ubicacion);
         Marker marcador = mapa.addMarker(options);
@@ -285,8 +290,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        latitude = String.valueOf(location.getLatitude());
-        longitude = String.valueOf(location.getLongitude());
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
     }
 
     @Override
