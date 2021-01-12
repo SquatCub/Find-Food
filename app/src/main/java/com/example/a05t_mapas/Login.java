@@ -10,12 +10,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
-    private final int VERSION = 2;
+    private int VERSION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Bundle bundle = getIntent().getExtras();
+        VERSION = bundle.getInt("VERSION");
     }
     public void login(View v) {
 

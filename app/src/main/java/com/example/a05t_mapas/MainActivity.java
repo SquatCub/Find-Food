@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -33,49 +34,90 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mapa;
+    private final int CODE_PERMISO = 3;
     private final int request_code = 1;
     private final int VERSION = 2;
 
     private long lastTouchTime = 0;
     private long currentTouchTime = 0;
 
-    protected LocationManager locationManager;
-
-    protected double latitude, longitude;
+    private LocationManager locManager;
+    private Location loc;
+    private double myLatitude;
+    private double myLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+            myLatitude = loc.getLatitude();
+            myLongitude = loc.getLongitude();
+
+            if (existUser()) {
+                loadDB();
+                loadData();
+                loadMap();
+            } else {
+                gotoLogin();
+            }
+        } else {
+            Toast.makeText(this, "No tiene Permisos para el GPS :( ", Toast.LENGTH_LONG).show();
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        
 
-        if(existUser()) {
-            loadDB();
-            loadData();
-            loadMap();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (CODE_PERMISO == requestCode) {
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Toast.makeText(this,"Lat: "+loc.getLatitude()+" | Lon: "+loc.getLongitude(),Toast.LENGTH_LONG).show();
+            myLatitude = loc.getLatitude();
+            myLongitude = loc.getLongitude();
+
+            if(existUser()) {
+                loadDB();
+                loadData();
+                loadMap();
+            }
+            else {
+                gotoLogin();
+            }
         }
         else {
-            gotoLogin();
+            Toast.makeText(this,"No tiene Permisos para el GPS :( ",Toast.LENGTH_LONG).show();
         }
     }
 
     private void gotoLogin() {
-        Intent intent = new Intent(this, Login.class);
-        startActivity(intent);
+        Intent i = new Intent(MainActivity.this, Login.class);
+        Bundle b = new Bundle();
+
+        b.putInt("VERSION", VERSION);
+
+        i.putExtras(b);
+        startActivity(i);
         finish();
     }
 
@@ -140,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         mapa = googleMap;
-        LatLng ll = new LatLng(latitude, longitude);
+        LatLng ll = new LatLng(myLatitude, myLongitude);
 
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(ll,15);
 
@@ -231,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapa.clear();
 
         //Toast.makeText(getApplicationContext(), "Numero de Registros: "+Lista.Resenas.size(),Toast.LENGTH_SHORT).show();
-        LatLng ubicacion = new LatLng(latitude, longitude);
+        LatLng ubicacion = new LatLng(myLatitude, myLongitude);
 
         MarkerOptions options = new MarkerOptions().position(ubicacion);
         Marker marcador = mapa.addMarker(options);
@@ -286,26 +328,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         c.close();
         myDB.close();
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-
     }
 }
