@@ -6,6 +6,7 @@ public class Resena {
     private String restaurant;
     private String platillo;
     private String reseña;
+    private float rating;
 
     private double latitud;
     private double longitud;
@@ -48,6 +49,14 @@ public class Resena {
 
     public void setReseña(String reseña) {
         this.reseña = reseña;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating() {
+        this.rating = rating;
     }
 
     public double getLatitud() {

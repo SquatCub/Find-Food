@@ -95,6 +95,25 @@
             android:ems="10"
             android:inputType="textPersonName"
             android:text="" />
+        <TextView
+            android:id="@+id/textView5"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Calificacion del platillo"
+            android:textAlignment="center"/>
+
+        <RatingBar
+            android:id="@+id/ratingName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:numStars="5"
+            android:rating="0"
+            android:stepSize="0.5"
+            android:progressTint="#DC2614"
+            android:progressBackgroundTint="#000000"/>
+
     </LinearLayout>
     <LinearLayout
         android:id="@+id/LinearLayouts02"

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +40,14 @@ public class openResena_Activity extends AppCompatActivity implements OnMapReady
         TextView local = findViewById(R.id.nombreLocal);
         TextView alimento = findViewById(R.id.nombreAlimento);
         TextView resena = findViewById(R.id.nombreResena);
+        RatingBar rating = findViewById(R.id.rating);
 
         myTexto.setText("Ubicacion: "+indice);
         persona.setText("Usuario: "+myReseña.getNombre());
         local.setText("Restaurant/Local: "+myReseña.getRestaurant());
         alimento.setText("Alimento: "+myReseña.getPlatillo());
         resena.setText("Reseña: "+myReseña.getReseña());
+        rating.setRating(myReseña.getRating());
 
         iniciaMapa();
     }

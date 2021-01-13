@@ -35,6 +35,7 @@ public class MyBD_FindFood extends SQLiteOpenHelper {
                     "  restaurant TEXT , " +
                     "  platillo   TEXT , " +
                     "  resena     TEXT , " +
+                    "  rating      FLOAT , " +
                     "  fecha      TEXT , " +
                     "  idUser               INTEGER , " +
                     "  idGeoreferencia      INTEGER , " +

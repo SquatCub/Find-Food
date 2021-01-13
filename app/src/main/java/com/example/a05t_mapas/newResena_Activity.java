@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +21,8 @@ public class newResena_Activity extends AppCompatActivity {
     private EditText local;
     private EditText alimento;
     private EditText resena;
+    private RatingBar rating;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +30,7 @@ public class newResena_Activity extends AppCompatActivity {
         local = (EditText)findViewById(R.id.localName);
         alimento = (EditText)findViewById(R.id.comidaName);
         resena = (EditText)findViewById(R.id.resenaName);
+        rating = (RatingBar)findViewById(R.id.ratingName);
         //finish();
     }
 
@@ -50,8 +54,8 @@ public class newResena_Activity extends AppCompatActivity {
 
             String queryAddResena =
                     " INSERT INTO Resena " +
-                            "(restaurant, platillo, resena, fecha, idUser, idGeoreferencia) VALUES " +
-                            "('"+local.getText().toString()+"', '"+alimento.getText().toString()+"', '"+resena.getText().toString()+"', '"+getDateTime()+"', "+idUser+", "+idGeoreferencia+") ";
+                            "(restaurant, platillo, resena, rating, fecha, idUser, idGeoreferencia) VALUES " +
+                            "('"+local.getText().toString()+"', '"+alimento.getText().toString()+"', '"+resena.getText().toString()+"', '"+rating.getRating()+"', '"+getDateTime()+"', "+idUser+", "+idGeoreferencia+") ";
             myDB.execSQL(queryAddResena);
 
             myDB.close();
@@ -65,6 +69,7 @@ public class newResena_Activity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
+            //Toast.makeText(this,String.valueOf(rating.getRating()), Toast.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(newResena_Activity.this, "Debes llenar todos los datos", Toast.LENGTH_LONG).show();

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
             myLatitude = loc.getLatitude();
             myLongitude = loc.getLongitude();
 
