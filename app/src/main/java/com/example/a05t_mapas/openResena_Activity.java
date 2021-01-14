@@ -47,7 +47,7 @@ public class openResena_Activity extends AppCompatActivity implements OnMapReady
         local.setText("Restaurant/Local: "+myReseña.getRestaurant());
         alimento.setText("Alimento: "+myReseña.getPlatillo());
         resena.setText("Reseña: "+myReseña.getReseña());
-        rating.setRating(myReseña.getRating());
+        rating.setRating((float) myReseña.getRating());
 
         iniciaMapa();
     }

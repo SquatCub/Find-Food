@@ -48,7 +48,7 @@
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/myText"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,10 +109,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:numStars="5"
+            android:progressBackgroundTint="#4F000000"
+            android:progressTint="#C8DC14"
             android:rating="0"
-            android:stepSize="0.5"
-            android:progressTint="#DC2614"
-            android:progressBackgroundTint="#000000"/>
+            android:stepSize="0.5" />
 
     </LinearLayout>
     <LinearLayout
@@ -129,7 +129,6 @@
             android:layout_height="150px"
             android:layout_gravity="bottom"
             android:gravity="center"
-            android:onClick="create"
             android:padding="10px"
             android:text="Agregar lugar"
             android:textColor="#FFFFFF"

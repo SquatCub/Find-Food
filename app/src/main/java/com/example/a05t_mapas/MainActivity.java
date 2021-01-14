@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mapa;
     private final int CODE_PERMISO = 3;
     private final int request_code = 1;
-    private final int VERSION = 2;
+    private final int VERSION = 3;
 
     private long lastTouchTime = 0;
     private long currentTouchTime = 0;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 gotoLogin();
             }
         } else {
-            Toast.makeText(this, "No tiene Permisos para el GPS :( ", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
         }
 
@@ -92,9 +92,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Toast.makeText(this,"Lat: "+loc.getLatitude()+" | Lon: "+loc.getLongitude(),Toast.LENGTH_LONG).show();
             myLatitude = loc.getLatitude();
             myLongitude = loc.getLongitude();
+
+            Toast.makeText(MainActivity.this,"Obteniendo tu Ubicacion Actual...",Toast.LENGTH_LONG).show();
 
             if(existUser()) {
                 loadDB();
@@ -298,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
         SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
-        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad, apellido FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
+        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad, apellido, rating FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
 
         Cursor c = myDB.rawQuery(query, null);
         if (c.moveToFirst()){
@@ -313,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String nombre = c.getString(7);
                 int edad = c.getInt(8);
                 String apellido = c.getString(9);
+                double rating = c.getDouble(10);
 
                 Resena newResena = new Resena();
                 newResena.setNombre(nombre+" "+apellido);
@@ -322,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 newResena.setReseña(resena);
                 newResena.setLatitud(latitud);
                 newResena.setLongitud(longitud);
+                newResena.setRating(rating);
                 Lista.Resenas.add(newResena);
 
             } while(c.moveToNext());

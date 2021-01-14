@@ -1,16 +1,23 @@
 package com.example.a05t_mapas;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class Login extends AppCompatActivity {
+import com.example.a05t_mapas.dialogos.DialogoContinuarCancelar;
+import com.example.a05t_mapas.interfaces.InterfazDialogoContinuarCancelar;
+
+public class Login extends AppCompatActivity implements InterfazDialogoContinuarCancelar {
     private int VERSION;
+    private Button btnNewUser;
+    private DialogoContinuarCancelar myDialogoNewUser = new DialogoContinuarCancelar();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +25,23 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         Bundle bundle = getIntent().getExtras();
         VERSION = bundle.getInt("VERSION");
+
+        btnNewUser = (Button)findViewById(R.id.login);
+        listenerBtnNewUser();
     }
-    public void login(View v) {
+
+    private void listenerBtnNewUser() {
+        btnNewUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manejador = getSupportFragmentManager();
+                myDialogoNewUser.setText("Por favor verifica que tus datos sean correctos, una vez confirmada esta operacion no se podrá deshacer y asi es como apareceras en todas las Reseñas que publiques.");
+                myDialogoNewUser.show(manejador, "TAG");
+            }
+        });
+    }
+
+    public void login() {
 
         EditText myNombre = findViewById(R.id.userName);
         EditText myApellido = findViewById(R.id.userApellido);
@@ -48,5 +70,15 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this,"Debes llenar todos los datos...", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    @Override
+    public void continuar() {
+        login();
+    }
+
+    @Override
+    public void cancelar() {
+        Toast.makeText(Login.this,"Por favor Verifica que tus datos sean correctos",Toast.LENGTH_LONG).show();
     }
 }
