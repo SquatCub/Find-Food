@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,6 +17,8 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +36,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mapa;
@@ -48,10 +63,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double myLatitude;
     private double myLongitude;
 
+    private JSONObject myResult;
+
+    private ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        /*
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -71,9 +90,148 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
         }
+        */
+        try {
+            fetchSaludo();
+        } catch (JSONException e) {
+            Toast.makeText(MainActivity.this,e.toString(), Toast.LENGTH_LONG).show();
+        }
 
     }
 
+    /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
+    private void fetchSaludo() throws JSONException {
+        myResult = new JSONObject();
+        myResult.put("RUN","It's Work");
+
+            String cadenaQuery = WS_FindFood.getSaludo();
+            Toast.makeText(MainActivity.this,cadenaQuery, Toast.LENGTH_LONG).show();
+
+            new Fetch().execute(cadenaQuery);
+            //Toast.makeText(MainActivity.this,e.toString(), Toast.LENGTH_LONG).show();
+
+
+        //Toast.makeText(MainActivity.this,myResult.getString("RUN"), Toast.LENGTH_LONG).show();
+    }
+
+
+    /////////////////// CLASS FETCH AsyncTask ///////////////////
+    private class Fetch extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pd = new ProgressDialog(MainActivity.this);
+            pd.setMessage("Espere por favor.");
+            pd.setTitle("Realizando registro...");
+            pd.setCancelable(false);
+            pd.setIndeterminate(true);
+            pd.show();
+        }
+
+        private String downloadUrl(String myurl) throws IOException {
+            InputStream flujoEntrada = null;
+
+            try {
+                URL url = new URL(myurl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("firstParam", "paramValue1")
+                        .appendQueryParameter("secondParam", "paramValue2")
+                        .appendQueryParameter("thirdParam", "paramValue3");
+                String query = builder.build().getEncodedQuery();
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                // Starts the query
+                conn.connect();
+                int codigoRespuestaHTTP = conn.getResponseCode();
+
+                Log.d("Respuesta", "La respuesta es: " + codigoRespuestaHTTP);
+                flujoEntrada = conn.getInputStream();
+
+
+                System.out.println("Conn: "+conn.getContent());
+                System.out.println("Codigo Respuesta: "+codigoRespuestaHTTP);
+                System.out.println("Flujo Entrada: "+flujoEntrada.toString());
+
+                // Convert the InputStream into a string
+                String contentAsString = convertStreamToString(flujoEntrada);
+                System.out.println("STRFlujo: "+contentAsString);
+
+                conn.disconnect();
+                return contentAsString;
+                // Makes sure that the InputStream is closed after the app is
+                // finished using it.
+            }
+            finally {
+                if (flujoEntrada != null) {
+                    flujoEntrada.close();
+                }
+            }
+        }
+
+        private String convertStreamToString(InputStream flujoEntrada) {
+            Scanner s = new Scanner(flujoEntrada, "UTF-8").useDelimiter("\\A");
+            return s.hasNext() ? s.next() : "";
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                System.out.println("Params: "+params[0]);
+                return downloadUrl(params[0]);
+            } catch (IOException e) {
+                System.out.println("Error: "+e.toString());
+                return "088888";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+            if (pd.isShowing()) {
+                pd.dismiss();
+            }
+
+            /*
+            Log.d("Result: ", result);
+            String consulta = result.replace("f({\"results\":","").replace("});","");
+            if (consulta.compareTo("0")!=0){
+                // Se devuelven los datos un valor OK  a la llamada para saber que todo fue bien
+                //Intent data = new Intent();
+                //data.setData(Uri.parse(cad));
+                // setResult(RESULT_OK, data);
+                Toast.makeText(getApplicationContext(),"Registro exitoso...",Toast.LENGTH_SHORT).show();
+                finish();
+            }else{
+                Toast.makeText(getApplicationContext(),"Error posterior a llamada...",Toast.LENGTH_SHORT).show();
+            }
+            if (pd.isShowing()) {
+                pd.dismiss();
+                // registro.setEnabled(true);
+            }
+           */
+        }
+
+    }
+
+
+
+    /////////////////// SEGMENTO DE MAPAS ///////////////////
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
