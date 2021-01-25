@@ -94,22 +94,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         */
         try {
             fetchSaludo();
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Toast.makeText(MainActivity.this,e.toString(), Toast.LENGTH_LONG).show();
         }
 
     }
 
+    private void launchMap()
+    {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            //Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+            myLatitude = loc.getLatitude();
+            myLongitude = loc.getLongitude();
+
+            if (existUser()) {
+                loadDB();
+                loadData();
+                loadMap();
+            } else {
+                gotoLogin();
+            }
+        } else {
+            Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
+        }
+    }
+
     /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
-    private void fetchSaludo() throws JSONException {
+    private void fetchSaludo() {
+        // Clean Builder Global
+        myBuilder = new Uri.Builder();
+
         // Make URL
         String cadenaQuery = "http://192.168.0.106:8000/";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("firstParam", "paramValue1")
-                .appendQueryParameter("secondParam", "paramValue2")
-                .appendQueryParameter("thirdParam", "paramValue3");
+                .appendQueryParameter("firstParam", "paramValue1");
         myBuilder = builder;
 
         // Fetch Query
@@ -201,29 +225,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
-            if (pd.isShowing()) {
-                pd.dismiss();
+            try {
+                myResult = new JSONObject(result);
+                Toast.makeText(MainActivity.this,myResult.getString("RUN"),Toast.LENGTH_LONG).show();
+                launchMap();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            /*
-            Log.d("Result: ", result);
-            String consulta = result.replace("f({\"results\":","").replace("});","");
-            if (consulta.compareTo("0")!=0){
-                // Se devuelven los datos un valor OK  a la llamada para saber que todo fue bien
-                //Intent data = new Intent();
-                //data.setData(Uri.parse(cad));
-                // setResult(RESULT_OK, data);
-                Toast.makeText(getApplicationContext(),"Registro exitoso...",Toast.LENGTH_SHORT).show();
-                finish();
-            }else{
-                Toast.makeText(getApplicationContext(),"Error posterior a llamada...",Toast.LENGTH_SHORT).show();
-            }
             if (pd.isShowing()) {
                 pd.dismiss();
-                // registro.setEnabled(true);
             }
-           */
         }
 
     }
