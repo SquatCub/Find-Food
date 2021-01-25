@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double myLongitude;
 
     private JSONObject myResult;
+    private Uri.Builder myBuilder;
 
     private ProgressDialog pd;
 
@@ -101,17 +102,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
     private void fetchSaludo() throws JSONException {
-        myResult = new JSONObject();
-        myResult.put("RUN","It's Work");
+        // Make URL
+        String cadenaQuery = "http://192.168.0.106:8000/";
 
-            String cadenaQuery = WS_FindFood.getSaludo();
-            Toast.makeText(MainActivity.this,cadenaQuery, Toast.LENGTH_LONG).show();
+        // Make Paquete POST, para Enviar Info
+        Uri.Builder builder = new Uri.Builder()
+                .appendQueryParameter("firstParam", "paramValue1")
+                .appendQueryParameter("secondParam", "paramValue2")
+                .appendQueryParameter("thirdParam", "paramValue3");
+        myBuilder = builder;
 
-            new Fetch().execute(cadenaQuery);
-            //Toast.makeText(MainActivity.this,e.toString(), Toast.LENGTH_LONG).show();
-
-
-        //Toast.makeText(MainActivity.this,myResult.getString("RUN"), Toast.LENGTH_LONG).show();
+        // Fetch Query
+        new Fetch().execute(cadenaQuery);
     }
 
 
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             InputStream flujoEntrada = null;
 
             try {
+                // Preparar Conexion
                 URL url = new URL(myurl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000 /* milliseconds */);
@@ -141,11 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
 
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("firstParam", "paramValue1")
-                        .appendQueryParameter("secondParam", "paramValue2")
-                        .appendQueryParameter("thirdParam", "paramValue3");
-                String query = builder.build().getEncodedQuery();
+                String query = myBuilder.build().getEncodedQuery();
 
                 OutputStream os = conn.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(
