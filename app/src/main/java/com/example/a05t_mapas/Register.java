@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentManager;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class Login extends AppCompatActivity implements InterfazDialogoContinuarCancelar {
+public class Register extends AppCompatActivity implements InterfazDialogoContinuarCancelar {
     //private int VERSION;
     private Button btnNewUser;
     private DialogoContinuarCancelar myDialogoNewUser = new DialogoContinuarCancelar();
@@ -43,7 +42,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
         //Bundle bundle = getIntent().getExtras();
         //VERSION = bundle.getInt("VERSION");
 
@@ -74,7 +73,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
                 }
                 else
                 {
-                    Toast.makeText(Login.this,"Debes llenar todos los datos...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Register.this,"Debes llenar todos los datos...", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -88,7 +87,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
 
     @Override
     public void cancelar() {
-        Toast.makeText(Login.this,"Por favor Verifica que tus datos sean correctos",Toast.LENGTH_LONG).show();
+        Toast.makeText(Register.this,"Por favor Verifica que tus datos sean correctos",Toast.LENGTH_LONG).show();
     }
 
     /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
@@ -121,7 +120,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
         myBuilder = builder;
 
         // Fetch Query
-        new Login.Fetch().execute(cadenaQuery);
+        new Register.Fetch().execute(cadenaQuery);
     }
 
     /////////////////// CLASS FETCH AsyncTask ///////////////////
@@ -130,7 +129,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd = new ProgressDialog(Login.this);
+            pd = new ProgressDialog(Register.this);
             pd.setMessage("Espere por favor.");
             pd.setTitle("Realizando registro...");
             pd.setCancelable(false);
@@ -213,7 +212,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
 
                 if(myResult.getString("data").equals("OK"))
                 {
-                    Intent i = new Intent(Login.this, MainActivity.class);
+                    Intent i = new Intent(Register.this, MainActivity.class);
                     Bundle b = new Bundle();
 
                     b.putString("USER", myResult.getString("user"));
@@ -225,7 +224,7 @@ public class Login extends AppCompatActivity implements InterfazDialogoContinuar
                 }
                 else
                 {
-                    Toast.makeText(Login.this,myResult.getString("error"),Toast.LENGTH_LONG).show();
+                    Toast.makeText(Register.this,myResult.getString("error"),Toast.LENGTH_LONG).show();
 
                 }
 

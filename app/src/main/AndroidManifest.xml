@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.A05T_Mapas">
         <activity
-            android:name=".Login"
+            android:name=".Register"
             android:theme="@style/SplashScreen"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

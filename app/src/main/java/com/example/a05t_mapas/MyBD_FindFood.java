@@ -58,7 +58,7 @@ public class MyBD_FindFood extends SQLiteOpenHelper {
         Toast.makeText(this.myContext, "Creando Base de Datos... :)", Toast.LENGTH_LONG).show();
 
         // Primera vez que se usa la app, Pedir datos del Usuario
-        Intent intent = new Intent(this.myContext, Login.class);
+        Intent intent = new Intent(this.myContext, Register.class);
         myContext.startActivity(intent);
     }
 

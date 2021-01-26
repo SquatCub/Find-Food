@@ -13,9 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -263,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void gotoLogin() {
-        Intent i = new Intent(MainActivity.this, Login.class);
+        Intent i = new Intent(MainActivity.this, Register.class);
         Bundle b = new Bundle();
 
         b.putInt("VERSION", VERSION);
