@@ -165,7 +165,7 @@ public class newResena_Activity extends AppCompatActivity implements InterfazDia
                 .appendQueryParameter("local", local.getText().toString())
                 .appendQueryParameter("platillo", alimento.getText().toString())
                 .appendQueryParameter("resena", resena.getText().toString())
-                .appendQueryParameter("latitud", Double.toString(myLongitude))
+                .appendQueryParameter("latitud", Double.toString(myLatitude))
                 .appendQueryParameter("longitud", Double.toString(myLongitude))
                 .appendQueryParameter("rating", Float.toString(rating.getRating()));
         myBuilder = builder;
