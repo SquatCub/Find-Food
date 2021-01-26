@@ -257,23 +257,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private boolean existUser() {
-        MyBD_FindFood dbFindFood = new MyBD_FindFood(this, "MyBD_FindFood", null, VERSION);
-        SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
-        String query = "SELECT * FROM User";
-        boolean existUser = false;
-
-        Cursor c = myDB.rawQuery(query, null);
-
-        if (c.moveToFirst()){
-            existUser = true;
-        }
-        c.close();
-        myDB.close();
-
-        return existUser;
-    }
-
     private void loadMap() {
         if (googleServiciosDisponible())
         {
