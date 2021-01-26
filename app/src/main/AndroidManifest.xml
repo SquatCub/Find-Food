@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission. ACCESS_COARSE_LOCATION" />
 
-
     <permission
         android:name="com.example.a05t_mapas.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
@@ -27,17 +26,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.A05T_Mapas">
         <activity
-            android:name=".Register"
+            android:name=".Login"
             android:theme="@style/SplashScreen"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".openResena_Activity" />
         <activity android:name=".newResena_Activity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".Register" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -45,6 +46,9 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

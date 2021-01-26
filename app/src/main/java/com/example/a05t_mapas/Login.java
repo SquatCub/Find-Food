@@ -1,7 +1,6 @@
 package com.example.a05t_mapas;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,9 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a05t_mapas.dialogos.DialogoContinuarCancelar;
-import com.example.a05t_mapas.interfaces.InterfazDialogoContinuarCancelar;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,10 +26,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class Register extends AppCompatActivity implements InterfazDialogoContinuarCancelar {
-    //private int VERSION;
-    private Button btnNewUser;
-    private DialogoContinuarCancelar myDialogoNewUser = new DialogoContinuarCancelar();
+public class Login extends AppCompatActivity {
+
+
+    private Button btnLoginUser;
 
     private JSONObject myResult;
     private Uri.Builder myBuilder;
@@ -43,99 +39,67 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-        //Bundle bundle = getIntent().getExtras();
-        //VERSION = bundle.getInt("VERSION");
+        setContentView(R.layout.activity_login);
 
-        listenerBtnNewUser();
-        listenerToLogin();
+        listenerBtnLoginUser();
+        listenerBtnRegisterUser();
     }
 
-    private void listenerToLogin() {
-        TextView btnToLogin = findViewById(R.id.toLogin);
+    private void listenerBtnRegisterUser() {
+        TextView btnRegisterUser = findViewById(R.id.registrarse);
 
-        btnToLogin.setOnClickListener(new View.OnClickListener() {
+        btnRegisterUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Register.this, Login.class);
+                Intent i = new Intent(Login.this, Register.class);
                 startActivity(i);
                 finish();
             }
         });
     }
 
-    private void listenerBtnNewUser() {
-        btnNewUser = (Button)findViewById(R.id.login);
-        btnNewUser.setOnClickListener(new View.OnClickListener() {
+    private void listenerBtnLoginUser() {
+        btnLoginUser = (Button)findViewById(R.id.login);
+        btnLoginUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                 // Verify Campos de New User then Get Data and Fetch
-                EditText myNombre = findViewById(R.id.userName);
-                EditText myApellido = findViewById(R.id.userApellido);
-                EditText myEdad = findViewById(R.id.userEdad);
-                EditText myCiudad = findViewById(R.id.userCiudad);
-
                 EditText myEmail = findViewById(R.id.userEmail);
                 EditText myPassword = findViewById(R.id.userPass);
-                EditText myConfirmation = findViewById(R.id.userConfirm);
 
-                if(myNombre.getText().length() > 0 && myApellido.getText().length() > 0 && myEdad.getText().length() > 0 && myCiudad.getText().length() > 0 && myEmail.getText().length() > 0  && myPassword.getText().length() > 0  && myConfirmation.getText().length() > 0)
+                if(myEmail.getText().length() > 0  && myPassword.getText().length() > 0)
                 {
-                    FragmentManager manejador = getSupportFragmentManager();
-                    myDialogoNewUser.setText("Por favor verifica que tus datos sean correctos, una vez confirmada esta operacion no se podrá deshacer y asi es como apareceras en todas las Reseñas que publiques.");
-                    myDialogoNewUser.show(manejador, "TAG");
+                    fetchLogin();
                 }
                 else
                 {
-                    Toast.makeText(Register.this,"Debes llenar todos los datos...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Login.this,"Debes llenar todos los datos...", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-
-    @Override
-    public void continuar() {
-        fetchRegister();
-    }
-
-    @Override
-    public void cancelar() {
-        Toast.makeText(Register.this,"Por favor Verifica que tus datos sean correctos",Toast.LENGTH_LONG).show();
-    }
-
     /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
-    private void fetchRegister() {
+    private void fetchLogin() {
         // Clean Builder Global
         myBuilder = new Uri.Builder();
 
         // Get Data and Fetch
-        EditText myNombre = findViewById(R.id.userName);
-        EditText myApellido = findViewById(R.id.userApellido);
-        EditText myEdad = findViewById(R.id.userEdad);
-        EditText myCiudad = findViewById(R.id.userCiudad);
-
         EditText myEmail = findViewById(R.id.userEmail);
         EditText myPassword = findViewById(R.id.userPass);
-        EditText myConfirmation = findViewById(R.id.userConfirm);
 
         // Make URL
-        String cadenaQuery = "http://192.168.0.107:8000/register";
+        String cadenaQuery = "http://192.168.0.107:8000/login";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("email", myEmail.getText().toString())
-                .appendQueryParameter("password", myPassword.getText().toString())
-                .appendQueryParameter("confirmation", myConfirmation.getText().toString())
-                .appendQueryParameter("first_name", myNombre.getText().toString())
-                .appendQueryParameter("last_name", myApellido.getText().toString())
-                .appendQueryParameter("edad", myEdad.getText().toString())
-                .appendQueryParameter("ciudad", myCiudad.getText().toString());
+                .appendQueryParameter("password", myPassword.getText().toString());
         myBuilder = builder;
 
         // Fetch Query
-        new Register.Fetch().execute(cadenaQuery);
+        new Login.Fetch().execute(cadenaQuery);
     }
 
     /////////////////// CLASS FETCH AsyncTask ///////////////////
@@ -144,7 +108,7 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pd = new ProgressDialog(Register.this);
+            pd = new ProgressDialog(Login.this);
             pd.setMessage("Espere por favor.");
             pd.setTitle("Realizando registro...");
             pd.setCancelable(false);
@@ -227,7 +191,7 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
 
                 if(myResult.getString("data").equals("OK"))
                 {
-                    Intent i = new Intent(Register.this, MainActivity.class);
+                    Intent i = new Intent(Login.this, MainActivity.class);
                     Bundle b = new Bundle();
 
                     b.putString("USER", myResult.getString("user"));
@@ -235,12 +199,10 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
                     i.putExtras(b);
                     startActivity(i);
                     finish();
-
                 }
                 else
                 {
-                    Toast.makeText(Register.this,myResult.getString("error"),Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(Login.this,myResult.getString("error"),Toast.LENGTH_LONG).show();
                 }
 
             } catch (JSONException e) {
@@ -253,6 +215,4 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
         }
 
     }
-
-
 }
