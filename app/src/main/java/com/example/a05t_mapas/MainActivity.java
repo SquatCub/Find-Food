@@ -246,29 +246,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             Toast.makeText(MainActivity.this,"Obteniendo tu Ubicacion Actual...",Toast.LENGTH_LONG).show();
 
-            if(existUser()) {
-                loadDB();
-                loadData();
-                loadMap();
-            }
-            else {
-                gotoLogin();
-            }
+
+            loadDB();
+            loadData();
+            loadMap();
+
         }
         else {
             Toast.makeText(this,"No tiene Permisos para el GPS :( ",Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void gotoLogin() {
-        Intent i = new Intent(MainActivity.this, Register.class);
-        Bundle b = new Bundle();
-
-        b.putInt("VERSION", VERSION);
-
-        i.putExtras(b);
-        startActivity(i);
-        finish();
     }
 
     private boolean existUser() {
