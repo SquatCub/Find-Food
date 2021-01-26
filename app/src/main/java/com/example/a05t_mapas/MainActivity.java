@@ -68,30 +68,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ProgressDialog pd;
 
+    private String idUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            //Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
-            myLatitude = loc.getLatitude();
-            myLongitude = loc.getLongitude();
+        Bundle bundle = getIntent().getExtras();
+        idUser = bundle.getString("USER");
 
-            if (existUser()) {
-                loadDB();
-                loadData();
-                loadMap();
-            } else {
-                gotoLogin();
-            }
-        } else {
-            Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
-        }
-        */
         try {
             fetchSaludo();
         } catch (Exception e) {
@@ -110,13 +95,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             myLatitude = loc.getLatitude();
             myLongitude = loc.getLongitude();
 
-            if (existUser()) {
-                loadDB();
-                loadData();
-                loadMap();
-            } else {
-                gotoLogin();
-            }
+            loadDB();
+            loadData();
+            loadMap();
+
         } else {
             Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CODE_PERMISO);
@@ -129,11 +111,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         myBuilder = new Uri.Builder();
 
         // Make URL
-        String cadenaQuery = "http://192.168.0.106:8000/";
+        String cadenaQuery = "http://192.168.0.107:8000/";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("firstParam", "paramValue1");
+                .appendQueryParameter("idUser", idUser);
         myBuilder = builder;
 
         // Fetch Query
