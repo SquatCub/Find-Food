@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return downloadUrl(params[0]);
             } catch (IOException e) {
                 System.out.println("Error: "+e.toString());
-                return "088888";
+                return "Connection Error: "+e.toString();
             }
         }
 
@@ -333,6 +333,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         Bundle b = new Bundle();
 
                         b.putInt("indice", indice);
+                        b.putString("USER", idUser);
 
                         i.putExtras(b);
                         startActivity(i);
@@ -365,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     b.putDouble("lat", latLng.latitude);
                     b.putDouble("lon", latLng.longitude);
                     b.putInt("VERSION", VERSION);
+                    b.putString("USER", idUser);
                     i.putExtras(b);
 
                     startActivityForResult(i, request_code);
