@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         myBuilder = new Uri.Builder();
 
         // Make URL
-        String cadenaQuery = "http://192.168.0.107:8000/";
+        String cadenaQuery = "http://192.168.1.73:8000/";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()

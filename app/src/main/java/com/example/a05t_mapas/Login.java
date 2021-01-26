@@ -90,7 +90,7 @@ public class Login extends AppCompatActivity {
         EditText myPassword = findViewById(R.id.userPass);
 
         // Make URL
-        String cadenaQuery = "http://192.168.0.107:8000/login";
+        String cadenaQuery = "http://192.168.1.73:8000/login";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
