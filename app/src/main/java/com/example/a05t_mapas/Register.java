@@ -31,7 +31,6 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class Register extends AppCompatActivity implements InterfazDialogoContinuarCancelar {
-    //private int VERSION;
     private Button btnNewUser;
     private DialogoContinuarCancelar myDialogoNewUser = new DialogoContinuarCancelar();
 
@@ -44,8 +43,6 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        //Bundle bundle = getIntent().getExtras();
-        //VERSION = bundle.getInt("VERSION");
 
         listenerBtnNewUser();
         listenerToLogin();

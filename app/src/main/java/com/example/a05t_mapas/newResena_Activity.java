@@ -1,12 +1,7 @@
 package com.example.a05t_mapas;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.a05t_mapas.dialogos.DialogoContinuarCancelar;
 import com.example.a05t_mapas.interfaces.InterfazDialogoContinuarCancelar;
@@ -78,61 +76,6 @@ public class newResena_Activity extends AppCompatActivity implements InterfazDia
         });
     }
 
-    public void create() {
-
-            Bundle bundle = getIntent().getExtras();
-            MyBD_FindFood dbFindFood = new MyBD_FindFood(newResena_Activity.this, "MyBD_FindFood", null, bundle.getInt("VERSION"));
-            SQLiteDatabase myDB = dbFindFood.getWritableDatabase();
-
-            String queryAddGeoreferencia =
-                    " INSERT INTO Georeferencia " +
-                            "(latitud, longitud) VALUES " +
-                            "("+bundle.getDouble("lat")+", "+bundle.getDouble("lon")+")";
-
-            myDB.execSQL(queryAddGeoreferencia);
-
-            int idUser = 1;
-            int idGeoreferencia = getIdGeoreferencia(bundle.getDouble("lat"), bundle.getDouble("lon"), bundle.getInt("VERSION"));
-
-
-            String queryAddResena =
-                    " INSERT INTO Resena " +
-                            "(restaurant, platillo, resena, rating, fecha, idUser, idGeoreferencia) VALUES " +
-                            "('"+local.getText().toString()+"', '"+alimento.getText().toString()+"', '"+resena.getText().toString()+"', '"+(double) rating.getRating()+"', '"+"', "+idUser+", "+idGeoreferencia+") ";
-            myDB.execSQL(queryAddResena);
-
-            myDB.close();
-
-            //Toast.makeText(this, queryAddResena, Toast.LENGTH_LONG).show();
-
-            Intent data = new Intent();
-            Toast.makeText(this,"Reseña creada con éxito", Toast.LENGTH_LONG).show();
-            setResult(RESULT_OK, data);
-
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-            //Toast.makeText(this,String.valueOf(rating.getRating()), Toast.LENGTH_LONG).show()
-
-    }
-
-    private int getIdGeoreferencia(double lat, double lon, int VERSION)
-    {
-        MyBD_FindFood dbFindFood = new MyBD_FindFood(newResena_Activity.this, "MyBD_FindFood", null, VERSION);
-        SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
-        String query = "SELECT * FROM Georeferencia WHERE latitud = "+lat+" AND longitud = "+lon+"";
-        int idGeoreferencia = 1;
-
-        Cursor c = myDB.rawQuery(query, null);
-        if (c.moveToFirst()){
-            idGeoreferencia = c.getInt(0);
-        }
-        c.close();
-        myDB.close();
-
-        return idGeoreferencia;
-    }
-
     @Override
     public void continuar() {
         try {
@@ -171,7 +114,6 @@ public class newResena_Activity extends AppCompatActivity implements InterfazDia
         myBuilder = builder;
 
         // Fetch Query
-        //Toast.makeText(this,cadenaQuery.toString(), Toast.LENGTH_LONG).show();
         new newResena_Activity.Fetch().execute(cadenaQuery);
     }
 

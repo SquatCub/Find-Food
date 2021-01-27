@@ -1,18 +1,11 @@
 package com.example.a05t_mapas;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -21,6 +14,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -272,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void loadMap() {
         if (googleServiciosDisponible())
         {
-            //Toast.makeText(this, "Servicios disponibles", Toast.LENGTH_SHORT).show();
             setContentView(R.layout.activity_main);
             iniciaMapa();
         }
@@ -280,12 +277,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             Toast.makeText(this, "Servicio NO disponible :(", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void loadDB() {
-        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
-        SQLiteDatabase myDB = dbFindFood.getWritableDatabase();
-        myDB.close();
     }
 
     private void iniciaMapa() {
