@@ -88,14 +88,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            //Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
-            myLatitude = loc.getLatitude();
-            myLongitude = loc.getLongitude();
+            try {
 
-            loadData();
-            loadMap();
+                locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                //Toast.makeText(this, "Lat: " + loc.getLatitude() + " | Lon: " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+                myLatitude = loc.getLatitude();
+                myLongitude = loc.getLongitude();
+
+                loadData();
+                loadMap();
+            }
+            catch (Exception e)
+            {
+                System.out.println("Get Location Current: "+e.toString());
+            }
 
         } else {
             Toast.makeText(this, "La APP Necesita Permisos GPS", Toast.LENGTH_LONG).show();
@@ -251,15 +258,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            myLatitude = loc.getLatitude();
-            myLongitude = loc.getLongitude();
+            else
+            {
+                locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                myLatitude = loc.getLatitude();
+                myLongitude = loc.getLongitude();
 
-            Toast.makeText(MainActivity.this,"Obteniendo tu Ubicacion Actual...",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,"Obteniendo tu Ubicacion Actual...",Toast.LENGTH_LONG).show();
 
-            loadData();
-            loadMap();
+                loadData();
+                loadMap();
+            }
+
 
         }
         else {
