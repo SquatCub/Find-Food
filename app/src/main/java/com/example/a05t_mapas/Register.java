@@ -121,7 +121,7 @@ public class Register extends AppCompatActivity implements InterfazDialogoContin
         EditText myConfirmation = findViewById(R.id.userConfirm);
 
         // Make URL
-        String cadenaQuery = "http://192.168.1.73:8000/register";
+        String cadenaQuery = "http://"+IP.getIP()+"/register";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()

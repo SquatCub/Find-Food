@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private double myLatitude;
     private double myLongitude;
 
+    private JSONArray myData;
+
     private JSONObject myResult;
     private Uri.Builder myBuilder;
 
@@ -76,14 +79,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         idUser = bundle.getString("USER");
 
         try {
-            fetchSaludo();
+            fetchData();
         } catch (Exception e) {
             Toast.makeText(MainActivity.this,e.toString(), Toast.LENGTH_LONG).show();
         }
 
     }
 
-    private void launchMap()
+    private void launchMap(JSONArray data)
     {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -93,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             myLatitude = loc.getLatitude();
             myLongitude = loc.getLongitude();
 
-            loadDB();
             loadData();
             loadMap();
 
@@ -104,12 +106,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /////////////////// SEGMENTO DE WEB SERVICE ///////////////////
-    private void fetchSaludo() {
+    private void fetchData() {
         // Clean Builder Global
         myBuilder = new Uri.Builder();
 
         // Make URL
-        String cadenaQuery = "http://192.168.1.73:8000/";
+        String cadenaQuery = "http://"+IP.getIP()+"/";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
@@ -207,8 +209,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             super.onPostExecute(result);
             try {
                 myResult = new JSONObject(result);
-                Toast.makeText(MainActivity.this,myResult.getString("RUN"),Toast.LENGTH_LONG).show();
-                launchMap();
+
+                if(myResult.getString("data").equals("OK"))
+                {
+                    Toast.makeText(MainActivity.this,myResult.getString("hello"),Toast.LENGTH_LONG).show();
+                    myData = myResult.getJSONArray("myResenas");
+
+                    // Launch my MAPA
+                    launchMap(myData);
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this,myResult.getString("error"),Toast.LENGTH_LONG).show();
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -246,8 +260,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             Toast.makeText(MainActivity.this,"Obteniendo tu Ubicacion Actual...",Toast.LENGTH_LONG).show();
 
-
-            loadDB();
             loadData();
             loadMap();
 
@@ -370,7 +382,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     i.putExtras(b);
 
                     startActivityForResult(i, request_code);
-                    finish();
+                    //finish();
                 }
             });
         }
@@ -417,39 +429,38 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void loadData()
     {
-        MyBD_FindFood dbFindFood = new MyBD_FindFood(MainActivity.this, "MyBD_FindFood", null, VERSION);
-        SQLiteDatabase myDB = dbFindFood.getReadableDatabase();
-        String query = "SELECT Resena.idResena, latitud, longitud, restaurant, platillo, resena, fecha, nombre, edad, apellido, rating FROM Georeferencia INNER JOIN Resena INNER JOIN User ON Georeferencia.idGeoreferencia = Resena.idGeoreferencia AND Resena.idUser = User.idUser";
+        if (myData.length() > 0){
+            try {
+                for(int i = 0; i < myData.length(); i++) {
+                    JSONObject myResena = myData.getJSONObject(i);
+                    int idResena = myResena.getInt("id");
+                    double latitud = myResena.getDouble("latitud");
+                    double longitud = myResena.getDouble("longitud");
+                    String restaurant = myResena.getString("restaurant");
+                    String platillo = myResena.getString("platillo");
+                    String resena = myResena.getString("resena");
+                    String fecha = myResena.getString("fecha");
+                    String nombre = myResena.getString("first_name");
+                    int edad = myResena.getInt("edad");
+                    String apellido = myResena.getString("last_name");
+                    double rating = myResena.getDouble("rating");;
 
-        Cursor c = myDB.rawQuery(query, null);
-        if (c.moveToFirst()){
-            do {
-                int idResena = c.getInt(0);
-                double latitud = c.getDouble(1);
-                double longitud = c.getDouble(2);
-                String restaurant = c.getString(3);
-                String platillo = c.getString(4);
-                String resena = c.getString(5);
-                String fecha = c.getString(6);
-                String nombre = c.getString(7);
-                int edad = c.getInt(8);
-                String apellido = c.getString(9);
-                double rating = c.getDouble(10);
+                    Resena newResena = new Resena();
+                    newResena.setNombre(nombre+" "+apellido);
+                    newResena.setEdad(edad);
+                    newResena.setRestaurant(restaurant);
+                    newResena.setPlatillo(platillo);
+                    newResena.setReseña(resena);
+                    newResena.setLatitud(latitud);
+                    newResena.setLongitud(longitud);
+                    newResena.setRating(rating);
+                    Lista.Resenas.add(newResena);
 
-                Resena newResena = new Resena();
-                newResena.setNombre(nombre+" "+apellido);
-                newResena.setEdad(edad);
-                newResena.setRestaurant(restaurant);
-                newResena.setPlatillo(platillo);
-                newResena.setReseña(resena);
-                newResena.setLatitud(latitud);
-                newResena.setLongitud(longitud);
-                newResena.setRating(rating);
-                Lista.Resenas.add(newResena);
-
-            } while(c.moveToNext());
+                }
+            }
+            catch (Exception e) {
+                e.toString();
+            }
         }
-        c.close();
-        myDB.close();
     }
 }

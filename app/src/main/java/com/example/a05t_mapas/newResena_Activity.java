@@ -157,7 +157,7 @@ public class newResena_Activity extends AppCompatActivity implements InterfazDia
         myBuilder = new Uri.Builder();
 
         // Make URL
-        String cadenaQuery = "http://192.168.1.73:8000/new_resena";
+        String cadenaQuery = "http://"+IP.getIP()+"/new_resena";
 
         // Make Paquete POST, para Enviar Info
         Uri.Builder builder = new Uri.Builder()
